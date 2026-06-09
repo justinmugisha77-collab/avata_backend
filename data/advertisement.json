@@ -1,0 +1,86 @@
+{
+  "items": [
+    {
+      "id": "ad-1779193916781-968198",
+      "type": "video",
+      "media": "/uploads/advertisements/ad-1779193811960-808810549.mp4",
+      "title": "",
+      "description": "",
+      "visible": true,
+      "createdAt": "2026-05-19T12:31:56.781Z"
+    },
+    {
+      "id": "ad-1778515762643-32123",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1778515761677-790709221.jpg",
+      "title": "Chain hoist",
+      "description": "Strong",
+      "visible": true,
+      "createdAt": "2026-05-11T16:09:22.643Z"
+    },
+    {
+      "id": "ad-1777983258754-20920",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1777983258629-770582910.jpg",
+      "title": "",
+      "description": "",
+      "visible": true,
+      "createdAt": "2026-05-05T12:14:18.754Z"
+    },
+    {
+      "id": "ad-1777983245462-761968",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1777983245140-42076331.jpg",
+      "title": "",
+      "description": "",
+      "visible": true,
+      "createdAt": "2026-05-05T12:14:05.462Z"
+    },
+    {
+      "id": "ad-1777983232147-121392",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1777983232087-768828408.jpg",
+      "title": "",
+      "description": "",
+      "visible": true,
+      "createdAt": "2026-05-05T12:13:52.147Z"
+    },
+    {
+      "id": "ad-1777983218546-938711",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1777983218489-188856755.jpg",
+      "title": "",
+      "description": "",
+      "visible": true,
+      "createdAt": "2026-05-05T12:13:38.546Z"
+    },
+    {
+      "id": "ad-1777983193587-724624",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1777983193537-694405944.jpg",
+      "title": "",
+      "description": "",
+      "visible": true,
+      "createdAt": "2026-05-05T12:13:13.587Z"
+    },
+    {
+      "id": "ad-1777983160676-287027",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1777983160649-466311834.jpg",
+      "title": "",
+      "description": "",
+      "visible": true,
+      "createdAt": "2026-05-05T12:12:40.676Z"
+    },
+    {
+      "id": "ad-1775823475841-984467",
+      "type": "image",
+      "media": "/uploads/advertisements/ad-1775823475838-997551682.jpeg",
+      "title": "new items",
+      "description": "read more please",
+      "visible": true,
+      "createdAt": "2026-04-10T12:17:55.841Z"
+    }
+  ],
+  "updatedAt": "2026-05-19T15:53:43.867Z"
+}
