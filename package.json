@@ -4,8 +4,8 @@
   "description": "AVATA Trading Platform - E-commerce with Backend and Frontend",
   "main": "backend/server.js",
   "scripts": {
-    "postinstall": "cd backend && npm install",
-    "start": "cd backend && node server.js",
+    "postinstall": "npm ci --prefix backend --omit=dev || true",
+    "start": "node backend/server.js",
     "dev": "cd backend && nodemon server.js",
     "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install"
   },
