@@ -1,4 +1,16 @@
 {
+  "name": "avata-trading",
+  "version": "1.0.0",
+  "description": "AVATA Trading Platform - E-commerce with Backend and Frontend",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "dev": "cd backend && nodemon server.js",
+    "install-all": "npm install && cd backend && npm install && cd ../frontend && npm install"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
     "react-icons": "^5.6.0"
   }
