@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1772433403224,
+    "name": "Machine",
+    "category": "TOOLS",
+    "originalPrice": 150000,
+    "currentPrice": 160000,
+    "image": "/uploads/special_offers/offer-1772433403217-404821366.jpg"
+  },
+  {
+    "id": 1772433706460,
+    "name": "Safety Footwear",
+    "category": "Foot Protection",
+    "originalPrice": 60000,
+    "currentPrice": 102000,
+    "image": "/uploads/special_offers/offer-1772433706454-250960394.jpeg"
+  },
+  {
+    "id": 1772433783484,
+    "name": "Full body coveralls",
+    "category": "Flame-Resistant Clothing",
+    "originalPrice": 48000,
+    "currentPrice": 35000,
+    "image": "/uploads/special_offers/offer-1772433783475-953940757.jpeg"
+  },
+  {
+    "id": 1772434032938,
+    "name": "Full",
+    "category": "Construction",
+    "originalPrice": 25000,
+    "currentPrice": 40000,
+    "image": "http://localhost:5000/uploads/special_offers/offer-1772434032923-68442354.png",
+    "linkedProductId": null
+  }
+]
