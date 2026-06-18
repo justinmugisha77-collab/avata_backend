@@ -10,13 +10,12 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 const db = require('./config/db');
 
 // Check database connection on server start
-db.getConnection()
-    .then(conn => {
-        console.log('Database connected successfully!');
-        conn.release();
+db.all("SELECT 1")
+    .then(() => {
+        console.log('✅ Database connected successfully!');
     })
     .catch(err => {
-        console.error('Database connection failed:', err.message);
+        console.error('❌ Database connection failed:', err.message);
     });
 
 const app = express();
