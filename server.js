@@ -9,14 +9,42 @@ dotenv.config({ path: path.join(__dirname, '.env') });
 
 const db = require('./config/db');
 
-// Check database connection on server start
-db.all("SELECT 1")
-    .then(() => {
-        console.log('✅ Database connected successfully!');
-    })
-    .catch(err => {
-        console.error('❌ Database connection failed:', err.message);
-    });
+// Auto-initialize database on startup
+const initializeDatabase = async () => {
+    try {
+        console.log('🔍 Checking database tables...');
+        const sqlFile = path.join(__dirname, './migrations/sqlite_init.sql');
+        const sql = fs.readFileSync(sqlFile, 'utf8');
+        
+        const statements = sql
+            .split(';')
+            .map(stmt => stmt.trim())
+            .filter(stmt => stmt.length > 0);
+        
+        for (const statement of statements) {
+            await new Promise((resolve, reject) => {
+                db.run(statement, (err) => {
+                    if (err && !err.message.includes('already exists')) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                });
+            });
+        }
+        console.log('✅ Database initialized successfully!');
+    } catch (error) {
+        console.error('❌ Database initialization error:', error.message);
+    }
+};
+
+// Initialize database before starting server
+initializeDatabase().then(() => {
+    console.log('✅ Database ready!');
+}).catch(err => {
+    console.error('⚠️ Database init warning:', err.message);
+    // Continue anyway - tables might already exist
+});
 
 const app = express();
 
