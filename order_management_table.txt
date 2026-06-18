@@ -1,0 +1,334 @@
+                    {/* Enhanced Table Layout */}
+                    <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b-2 border-gray-200">
+                            <tr>
+                              <th className="px-6 py-4 text-left text-xs font-black text-gray-700 uppercase tracking-wider">Order ID</th>
+                              <th className="px-6 py-4 text-left text-xs font-black text-gray-700 uppercase tracking-wider">Products</th>
+                              <th className="px-6 py-4 text-left text-xs font-black text-gray-700 uppercase tracking-wider">Customer</th>
+                              <th className="px-6 py-4 text-left text-xs font-black text-gray-700 uppercase tracking-wider">Date & Time</th>
+                              <th className="px-6 py-4 text-left text-xs font-black text-gray-700 uppercase tracking-wider">Amount</th>
+                              <th className="px-6 py-4 text-left text-xs font-black text-gray-700 uppercase tracking-wider">Status</th>
+                              <th className="px-6 py-4 text-center text-xs font-black text-gray-700 uppercase tracking-wider">Actions</th>
+                            </tr>
+                          </thead>
+                          <tbody className="divide-y divide-gray-200">
+                            {filteredOrders.length > 0 ? (
+                              filteredOrders.map((order) => {
+                                const oId = order.id || order.orderId;
+                                const items = order.items || [];
+                                const orderDate = new Date(order.created_at);
+
+                                return (
+                                  <React.Fragment key={oId}>
+                                    <tr className="hover:bg-gray-50 transition-colors">
+                                      {/* Order ID */}
+                                      <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                          <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center text-purple-700 font-bold shadow-sm">
+                                            #{oId}
+                                          </div>
+                                        </div>
+                                      </td>
+
+                                      {/* Product Images */}
+                                      <td className="px-6 py-4">
+                                        <div className="flex -space-x-2">
+                                          {items.slice(0, 3).map((item, idx) => (
+                                            <div
+                                              key={idx}
+                                              onClick={() => {
+                                                // Show full image modal
+                                                setExpandedOrderItems(prev => ({ ...prev, [oId]: !prev[oId] }));
+                                              }}
+                                              className="w-12 h-12 rounded-lg border-2 border-white overflow-hidden bg-gray-100 shadow-md hover:scale-110 transition-transform cursor-pointer"
+                                              title={item.product_name}
+                                            >
+                                              {item.image_url || item.image ? (
+                                                <img
+                                                  src={getFullImageUrl(item.image_url || item.image)}
+                                                  alt={item.product_name}
+                                                  className="w-full h-full object-cover"
+                                                />
+                                              ) : (
+                                                <Package className="w-6 h-6 text-gray-400 m-auto" />
+                                              )}
+                                            </div>
+                                          ))}
+                                          {items.length > 3 && (
+                                            <div className="w-12 h-12 rounded-lg border-2 border-white bg-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+                                              +{items.length - 3}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </td>
+
+                                      {/* Customer Info */}
+                                      <td className="px-6 py-4">
+                                        <div className="flex flex-col">
+                                          <span className="font-bold text-gray-900 text-sm">{order.customer_name}</span>
+                                          <span className="text-xs text-gray-500">{order.email}</span>
+                                          <span className="text-xs text-gray-500">{order.customer_phone || 'N/A'}</span>
+                                        </div>
+                                      </td>
+
+                                      {/* Date & Time */}
+                                      <td className="px-6 py-4">
+                                        <div className="flex flex-col">
+                                          <span className="font-bold text-gray-900 text-sm flex items-center gap-1">
+                                            <Clock className="w-4 h-4 text-purple-600" />
+                                            {orderDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                          </span>
+                                          <span className="text-xs text-gray-500">
+                                            {orderDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                                          </span>
+                                        </div>
+                                      </td>
+
+                                      {/* Amount */}
+                                      <td className="px-6 py-4">
+                                        <div className="flex flex-col">
+                                          <span className="font-bold text-purple-600 text-base">{(order.total_amount || 0).toLocaleString()} RWF</span>
+                                          <span className="text-xs text-gray-500">{items.length} item{items.length !== 1 ? 's' : ''}</span>
+                                        </div>
+                                      </td>
+
+                                      {/* Status Badge */}
+                                      <td className="px-6 py-4">
+                                        <span className={`px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider inline-block
+                                          ${order.status === 'Waiting_Proof' ? 'bg-yellow-100 text-yellow-800' :
+                                            order.status === 'Payment_Under_Review' ? 'bg-orange-100 text-orange-800' :
+                                              order.status === 'Paid' || order.status === 'Payment_Received' ? 'bg-green-100 text-green-800' :
+                                                order.status === 'Shipped' ? 'bg-blue-100 text-blue-800' :
+                                                  order.status === 'Delivered' ? 'bg-purple-100 text-purple-800' :
+                                                    order.status === 'Not_Delivered' ? 'bg-red-100 text-red-800' :
+                                                      order.status === 'Completed' ? 'bg-green-100 text-green-800' :
+                                                        order.status === 'Cancelled' ? 'bg-red-200 text-red-900' :
+                                                          'bg-gray-100 text-gray-800'
+                                          }`}
+                                        >
+                                          {order.status?.replace(/_/g, ' ')}
+                                        </span>
+                                      </td>
+
+                                      {/* Actions */}
+                                      <td className="px-6 py-4">
+                                        <div className="flex flex-col gap-2 min-w-[200px]">
+                                          {/* Blue Buttons Row */}
+                                          <div className="flex gap-2">
+                                            <button
+                                              onClick={() => setExpandedOrderItems(prev => ({ ...prev, [oId]: !prev[oId] }))}
+                                              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
+                                              title="View Order Details"
+                                            >
+                                              <Eye className="w-4 h-4" />
+                                              View
+                                            </button>
+                                            <button
+                                              onClick={() => {
+                                                if (order.payment_proof_url) {
+                                                  setReceiptUrl(order.payment_proof_url);
+                                                  setVerifyingOrder(order);
+                                                  setShowVerifyModal(true);
+                                                } else {
+                                                  showToast('No payment proof available', 'error');
+                                                }
+                                              }}
+                                              className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
+                                              title="View Payment Proof"
+                                            >
+                                              <FileText className="w-4 h-4" />
+                                              Proof
+                                            </button>
+                                          </div>
+
+                                          {/* Green Buttons Row */}
+                                          <div className="flex gap-2">
+                                            <button
+                                              onClick={() => {
+                                                setVerifyingOrder(order);
+                                                setShowVerifyModal(true);
+                                              }}
+                                              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
+                                              title="Approve Payment"
+                                            >
+                                              <CheckCircle className="w-4 h-4" />
+                                              Approve
+                                            </button>
+                                            <button
+                                              onClick={() => deliverOrder(oId)}
+                                              className="flex-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
+                                              title="Mark as Delivered"
+                                            >
+                                              <Truck className="w-4 h-4" />
+                                              Deliver
+                                            </button>
+                                          </div>
+
+                                          {/* Amber/Red Buttons Row */}
+                                          <div className="flex gap-2">
+                                            <button
+                                              onClick={() => shipOrder(oId)}
+                                              className="flex-1 bg-amber-600 hover:bg-amber-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
+                                              title="Mark as Shipped"
+                                            >
+                                              <Package className="w-4 h-4" />
+                                              Ship
+                                            </button>
+                                            <button
+                                              onClick={() => rejectPayment(oId)}
+                                              className="flex-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
+                                              title="Reject Payment"
+                                            >
+                                              <XCircle className="w-4 h-4" />
+                                              Reject
+                                            </button>
+                                          </div>
+
+                                          {/* Comment Button */}
+                                          <button
+                                            onClick={() => {
+                                              if (expandedOrderComments[oId]) {
+                                                setExpandedOrderComments(prev => ({ ...prev, [oId]: false }));
+                                              } else {
+                                                loadOrderComments(oId);
+                                                setExpandedOrderComments(prev => ({ ...prev, [oId]: true }));
+                                              }
+                                            }}
+                                            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1"
+                                          >
+                                            <MessageSquare className="w-4 h-4" />
+                                            Comment
+                                          </button>
+                                        </div>
+                                      </td>
+                                    </tr>
+
+                                    {/* Expanded Items Section */}
+                                    {expandedOrderItems[oId] && (
+                                      <tr className="bg-gray-50">
+                                        <td colSpan="7" className="px-6 py-6">
+                                          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                            <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-lg">
+                                              <Package className="w-5 h-5 text-purple-600" />
+                                              Order Items ({items.length})
+                                            </h4>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                              {items.map((item, idx) => (
+                                                <div
+                                                  key={idx}
+                                                  className="flex items-center gap-4 p-4 rounded-xl border-2 border-gray-100 hover:border-purple-300 hover:shadow-md transition-all cursor-pointer bg-white"
+                                                  onClick={() => {
+                                                    // Could open image in modal
+                                                    if (item.image_url || item.image) {
+                                                      window.open(getFullImageUrl(item.image_url || item.image), '_blank');
+                                                    }
+                                                  }}
+                                                >
+                                                  <div className="w-20 h-20 rounded-lg overflow-hidden bg-gray-100 shrink-0 shadow-sm">
+                                                    {item.image_url || item.image ? (
+                                                      <img
+                                                        src={getFullImageUrl(item.image_url || item.image)}
+                                                        alt={item.product_name}
+                                                        className="w-full h-full object-cover hover:scale-110 transition-transform"
+                                                      />
+                                                    ) : (
+                                                      <Package className="w-10 h-10 text-gray-400 m-auto mt-5" />
+                                                    )}
+                                                  </div>
+                                                  <div className="flex-1 min-w-0">
+                                                    <p className="font-bold text-gray-900 text-sm mb-1">{item.product_name}</p>
+                                                    <div className="flex items-center justify-between">
+                                                      <p className="text-sm text-purple-600 font-bold">{item.price?.toLocaleString()} RWF</p>
+                                                      <p className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                                        Qty: {item.quantity}
+                                                      </p>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mt-1">
+                                                      Subtotal: {(item.price * item.quantity).toLocaleString()} RWF
+                                                    </p>
+                                                  </div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+
+                                    {/* Expanded Comments Section */}
+                                    {expandedOrderComments[oId] && (
+                                      <tr className="bg-gray-50">
+                                        <td colSpan="7" className="px-6 py-6">
+                                          <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200">
+                                            <h4 className="font-bold text-gray-900 mb-4 flex items-center gap-2 text-lg">
+                                              <MessageSquare className="w-5 h-5 text-purple-600" />
+                                              Order Comments
+                                            </h4>
+                                            <div className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+                                              <div className="max-h-60 overflow-y-auto p-4 space-y-3">
+                                                {orderComments[oId]?.length > 0 ? (
+                                                  orderComments[oId].map((c, i) => (
+                                                    <div key={i} className={`flex flex-col ${c.role === 'customer' ? 'items-start' : 'items-end'}`}>
+                                                      <div className={`max-w-[75%] px-4 py-3 rounded-xl shadow-sm ${c.role === 'customer'
+                                                        ? 'bg-white text-gray-800 border border-gray-200'
+                                                        : 'bg-purple-600 text-white'
+                                                        }`}>
+                                                        <p className="text-sm">{c.comment}</p>
+                                                      </div>
+                                                      <div className="text-[10px] text-gray-400 mt-1 px-2 font-medium">
+                                                        {c.role} • {new Date(c.created_at).toLocaleString()}
+                                                      </div>
+                                                    </div>
+                                                  ))
+                                                ) : (
+                                                  <div className="text-center py-8 text-gray-400">
+                                                    <MessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                                                    <p className="text-sm font-medium">No comments yet</p>
+                                                  </div>
+                                                )}
+                                              </div>
+                                              <div className="p-4 border-t bg-white flex gap-3">
+                                                <textarea
+                                                  value={newComment[oId] || ''}
+                                                  onChange={e => setNewComment(prev => ({ ...prev, [oId]: e.target.value }))}
+                                                  placeholder="Type your message here..."
+                                                  className="flex-1 px-4 py-3 rounded-xl bg-gray-50 border-2 border-gray-200 focus:border-purple-400 focus:ring-2 focus:ring-purple-200 outline-none text-sm resize-none h-16 transition-all"
+                                                />
+                                                <button
+                                                  onClick={() => sendOrderComment(oId)}
+                                                  disabled={sendingComment === oId || !(newComment[oId] || '').trim()}
+                                                  className="px-6 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all font-bold text-sm flex items-center gap-2"
+                                                >
+                                                  {sendingComment === oId ? (
+                                                    <RefreshCw className="w-4 h-4 animate-spin" />
+                                                  ) : (
+                                                    <>
+                                                      <Send className="w-4 h-4" />
+                                                      Send
+                                                    </>
+                                                  )}
+                                                </button>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </td>
+                                      </tr>
+                                    )}
+                                  </React.Fragment>
+                                );
+                              })
+                            ) : (
+                              <tr>
+                                <td colSpan="7" className="px-6 py-20 text-center">
+                                  <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                                  <p className="text-gray-400 font-bold text-lg">No orders found</p>
+                                  <p className="text-gray-400 text-sm mt-2">Try adjusting your filters</p>
+                                </td>
+                              </tr>
+                            )}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>

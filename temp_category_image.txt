@@ -1,0 +1,34 @@
+Image field to add to category modal - INSERT BEFORE the closing </div> of the form div
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Category Image (Optional)</label>
+                {categoryForm.categoryImage && !categoryImageFile && (
+                  <div className="mb-3 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-xs text-blue-700 font-medium mb-2">Current image:</p>
+                    <img src={categoryForm.categoryImage} alt="Category" className="h-24 w-24 object-cover rounded-lg" />
+                  </div>
+                )}
+                {categoryImageFile && (
+                  <div className="mb-3 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <p className="text-xs text-green-700 font-medium mb-2">New image preview:</p>
+                    <img src={URL.createObjectURL(categoryImageFile)} alt="New" className="h-24 w-24 object-cover rounded-lg" />
+                  </div>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setCategoryImageFile(file);
+                      const reader = new FileReader();
+                      reader.onload = (event) => {
+                        setCategoryForm({ ...categoryForm, categoryImage: event.target?.result });
+                      };
+                      reader.readAsDataURL(file);
+                    }
+                  }}
+                  className="w-full px-4 py-2 border-2 border-gray-200 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none text-sm"
+                />
+                <p className="mt-1 text-xs text-gray-500">Upload an image for the category card on the home page</p>
+              </div>

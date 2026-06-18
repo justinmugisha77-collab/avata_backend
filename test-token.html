@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clear Token & Test Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #2563eb; }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover { background: #1d4ed8; }
+        .danger { background: #dc2626; }
+        .danger:hover { background: #b91c1c; }
+        .success { background: #16a34a; }
+        .success:hover { background: #15803d; }
+        .info {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            color: #991b1b;
+        }
+        .token-display {
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        label {
+            font-weight: bold;
+            color: #374151;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Token Management & Login Test</h1>
+        
+        <div class="info">
+            <strong>Current Status:</strong>
+            <div id="currentStatus">Checking...</div>
+        </div>
+
+        <h2>Step 1: Clear Old Tokens</h2>
+        <p>Click this button to remove any fake/demo tokens from your browser:</p>
+        <button class="danger" onclick="clearStorage()">🗑️ Clear All Tokens</button>
+
+        <h2>Step 2: Login to Get Real Token</h2>
+        <form onsubmit="testLogin(event)">
+            <label>Email:</label>
+            <input type="email" id="email" value="admin@avatatrading.com" required>
+            
+            <label>Password:</label>
+            <input type="password" id="password" value="Admin@123" required>
+            
+            <button type="submit" class="success">🔑 Login & Get Real Token</button>
+        </form>
+
+        <div id="result"></div>
+
+        <h2>Step 3: Verify Token</h2>
+        <button onclick="checkToken()">🔍 Check Current Token</button>
+        <div id="tokenInfo"></div>
+    </div>
+
+    <script>
+        function checkCurrentStatus() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            const statusDiv = document.getElementById('currentStatus');
+            
+            if (!token) {
+                statusDiv.innerHTML = '✅ <strong style="color: green;">No token stored (Clean state)</strong>';
+            } else if (token.startsWith('demo-token-')) {
+                statusDiv.innerHTML = '❌ <strong style="color: red;">FAKE TOKEN DETECTED!</strong> You have a demo token. Please clear it!';
+            } else if (token.startsWith('eyJ')) {
+                statusDiv.innerHTML = '✅ <strong style="color: green;">REAL JWT TOKEN detected!</strong> You have a valid token.';
+            } else {
+                statusDiv.innerHTML = '⚠️ <strong style="color: orange;">Unknown token format</strong>';
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            document.getElementById('result').innerHTML = 
+                '<div class="info"><strong>✅ Storage Cleared!</strong><br>All tokens removed from browser. You can now login to get a real token.</div>';
+            checkCurrentStatus();
+        }
+
+        async function testLogin(event) {
+            event.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const resultDiv = document.getElementById('result');
+            
+            resultDiv.innerHTML = '<div class="info">Logging in...</div>';
+            
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    localStorage.setItem('token', data.token);
+                    localStorage.setItem('user', JSON.stringify(data.user));
+                    
+                    resultDiv.innerHTML = `
+                        <div class="info">
+                            <h3>✅ Login Successful!</h3>
+                            <p><strong>User:</strong> ${data.user.full_name}</p>
+                            <p><strong>Email:</strong> ${data.user.email}</p>
+                            <p><strong>Role:</strong> ${data.user.role}</p>
+                            <p><strong>Token Type:</strong> ${data.token.startsWith('eyJ') ? 'Real JWT Token ✅' : 'Unknown'}</p>
+                            <div class="token-display">
+                                <strong>Token:</strong><br>
+                                ${data.token}
+                            </div>
+                        </div>
+                    `;
+                    checkCurrentStatus();
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <strong>❌ Login Failed</strong><br>
+                            ${data.message || 'Invalid credentials'}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <strong>❌ Connection Error</strong><br>
+                        Cannot connect to backend server at http://localhost:5000<br>
+                        Make sure the backend is running!<br><br>
+                        Error: ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function checkToken() {
+            const token = localStorage.getItem('token');
+            const user = localStorage.getItem('user');
+            const infoDiv = document.getElementById('tokenInfo');
+            
+            if (!token) {
+                infoDiv.innerHTML = '<div class="error">❌ No token found in storage</div>';
+                return;
+            }
+
+            let tokenType = 'Unknown';
+            let isValid = false;
+            
+            if (token.startsWith('demo-token-')) {
+                tokenType = '❌ FAKE DEMO TOKEN - This will cause "jwt malformed" errors!';
+                isValid = false;
+            } else if (token.startsWith('eyJ')) {
+                tokenType = '✅ REAL JWT TOKEN - This is valid!';
+                isValid = true;
+                
+                // Try to decode JWT (just the payload, not verifying signature)
+                try {
+                    const parts = token.split('.');
+                    const payload = JSON.parse(atob(parts[1]));
+                    
+                    infoDiv.innerHTML = `
+                        <div class="info">
+                            <h3>${tokenType}</h3>
+                            <div class="token-display">
+                                <strong>Full Token:</strong><br>
+                                ${token}
+                            </div>
+                            <strong>Decoded Payload:</strong>
+                            <div class="token-display">
+                                User ID: ${payload.id}<br>
+                                Email: ${payload.email}<br>
+                                Role: ${payload.role}<br>
+                                Issued: ${new Date(payload.iat * 1000).toLocaleString()}<br>
+                                Expires: ${new Date(payload.exp * 1000).toLocaleString()}
+                            </div>
+                        </div>
+                    `;
+                    return;
+                } catch (e) {
+                    tokenType = '⚠️ JWT format but cannot decode';
+                }
+            }
+            
+            infoDiv.innerHTML = `
+                <div class="${isValid ? 'info' : 'error'}">
+                    <h3>${tokenType}</h3>
+                    <div class="token-display">
+                        ${token}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Check status on page load
+        checkCurrentStatus();
+    </script>
+</body>
+</html>
